@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* ── Hero banner ───────────────────────────────────────────── */
+    .pa-hero {
+      display: flex;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      height: 280px;
+      padding: 32px 40px;
+      text-decoration: none;
+      overflow: hidden;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(110deg, #0c1a18 0%, #0d3d38 35%, #0e5e57 65%, #0d9488 100%);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: box-shadow 0.35s ease;
+    }
+    .pa-hero:hover {
+      box-shadow: 0 8px 48px rgba(20, 184, 169, 0.28);
+    }
+    .pa-hero:focus-visible {
+      outline: 2px solid rgba(20, 184, 169, 0.6);
+      outline-offset: -2px;
+    }
+
+    /* Canvas for animated particle network */
+    #pa-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Shine sweep on hover */
+    .pa-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 55%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(20, 184, 169, 0.07), transparent);
+      transform: skewX(-18deg);
+      transition: left 0.7s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .pa-hero:hover::before { left: 160%; }
+
+    /* ── Left content ──────────────────────────────────────────── */
+    .pa-content {
+      flex: 1;
+      position: relative;
+      z-index: 2;
+      padding-right: 24px;
+      align-self: flex-start;
+    }
+
+    .pa-eyebrow {
+      color: rgba(153, 246, 228, 0.85);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin: 0 0 10px 0;
+      font-family: inherit;
+    }
+
+    .pa-title {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.20;
+      letter-spacing: -0.4px;
+      color: #ffffff;
+      font-family: inherit;
+    }
+
+    .pa-desc {
+      margin: 0 0 14px 0;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.66);
+      line-height: 1.58;
+      max-width: 390px;
+      font-family: inherit;
+    }
+
+    /* ── Three pillars ─────────────────────────────────────────── */
+    .pa-pillars {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .pa-pillar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.78);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .pa-pillar-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #14B8A9;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px rgba(20, 184, 169, 0.7);
+    }
+
+    /* ── CTA Button ────────────────────────────────────────────── */
+    .pa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      border-radius: 28px;
+      background: #14B8A9;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+      box-shadow: 0 4px 18px rgba(20, 184, 169, 0.40);
+      line-height: 1;
+    }
+    .pa-btn:hover {
+      background: #0d9488;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(20, 184, 169, 0.50);
+    }
+    .pa-btn-arrow {
+      transition: transform 0.2s;
+    }
+    .pa-btn:hover .pa-btn-arrow { transform: translateX(3px); }
+
+    /* ── Right visual ──────────────────────────────────────────── */
+    .pa-visual {
+      flex-shrink: 0;
+      width: 310px;
+      height: 174px;
+      position: relative;
+      z-index: 2;
+      align-self: center;
+    }
+
+    .pa-card {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(24px) saturate(1.3);
+      -webkit-backdrop-filter: blur(24px) saturate(1.3);
+      border: 1px solid rgba(20, 184, 169, 0.22);
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    .pa-card-main {
+      top: 0;
+      left: 0;
+      width: 222px;
+      height: 170px;
+      padding: 14px 14px 10px;
+    }
+
+    .pa-card-overlay {
+      top: 46px;
+      left: 156px;
+      width: 148px;
+      padding: 12px 13px;
+    }
+
+    .pa-card-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .pa-card-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .pa-card-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.55);
+      font-family: inherit;
+    }
+
+    /* ── Checklist items ───────────────────────────────────────── */
+    .pa-check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+    .pa-check-item:last-of-type { margin-bottom: 0; }
+
+    .pa-check-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+    }
+    .pa-check-icon.checked { background: rgba(20, 184, 169, 0.85); }
+    .pa-check-icon.pending { border: 1.5px solid rgba(255, 255, 255, 0.35); background: transparent; }
+
+    .pa-check-label {
+      font-size: 9.5px;
+      color: rgba(255, 255, 255, 0.82);
+      font-family: inherit;
+      font-weight: 500;
+    }
+
+    .pa-progress-bar {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 3px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .pa-progress-fill {
+      height: 100%;
+      width: 67%;
+      background: linear-gradient(90deg, rgba(20, 184, 169, 0.85), rgba(153, 246, 228, 0.90));
+      border-radius: 3px;
+    }
+
+    /* ── Reduced motion ────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .pa-hero::before, .pa-btn, .pa-btn-arrow { transition: none; }
+    }
+
+    /* ── Responsive: small screen ──────────────────────────────── */
+    @media (max-width: 680px) {
+      .pa-hero {
+        flex-direction: column;
+        height: auto;
+        min-height: 340px;
+        padding: 24px 20px;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .pa-visual  { display: none; }
+      .pa-title   { font-size: 22px; }
+      .pa-desc    { font-size: 13px; max-width: 100%; }
+      .pa-pillars { flex-wrap: wrap; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#"
+     class="pa-hero"
+     aria-label="Partner Academy — Learn, Sell, and Deliver with Confidence. Start Your Journey.">
+
+    <canvas id="pa-canvas" aria-hidden="true"></canvas>
+
+    <!-- Left: text content -->
+    <div class="pa-content">
+      <p class="pa-eyebrow">Partner Academy</p>
+      <h2 class="pa-title">Learn, Sell, and<br>Deliver with Confidence</h2>
+      <p class="pa-desc">Master the platform, build your sales playbook, and deliver outstanding solutions — everything partners need to grow and succeed.</p>
+
+      <div class="pa-pillars">
+        <span class="pa-pillar">
+          <span class="pa-pillar-dot"></span>
+          Learn the Platform
+        </span>
+        <span class="pa-pillar">
+          <span class="pa-pillar-dot"></span>
+          Sell with Confidence
+        </span>
+        <span class="pa-pillar">
+          <span class="pa-pillar-dot"></span>
+          Deliver the Solution
+        </span>
+      </div>
+
+      <span class="pa-btn">
+        Start Your Journey
+        <span class="pa-btn-arrow" aria-hidden="true">↗</span>
+      </span>
+    </div>
+
+    <!-- Right: partner dashboard illustration -->
+    <div class="pa-visual" aria-hidden="true">
+
+      <!-- Main pipeline + revenue card -->
+      <div class="pa-card pa-card-main">
+        <div class="pa-card-header">
+          <div class="pa-card-dot" style="background: rgba(20,184,169,0.9);"></div>
+          <span class="pa-card-title">Partner Pipeline</span>
+        </div>
+        <svg width="194" height="130" viewBox="0 0 194 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="paAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(20,184,169,0.42)"/>
+              <stop offset="100%" stop-color="rgba(20,184,169,0.00)"/>
+            </linearGradient>
+            <linearGradient id="paBar1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(20,184,169,0.95)"/>
+              <stop offset="100%" stop-color="rgba(13,148,136,0.75)"/>
+            </linearGradient>
+            <linearGradient id="paBar2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(20,184,169,0.72)"/>
+              <stop offset="100%" stop-color="rgba(13,148,136,0.55)"/>
+            </linearGradient>
+            <linearGradient id="paBar3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(20,184,169,0.50)"/>
+              <stop offset="100%" stop-color="rgba(13,148,136,0.38)"/>
+            </linearGradient>
+            <linearGradient id="paBar4" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(153,246,228,0.90)"/>
+              <stop offset="100%" stop-color="rgba(94,234,212,0.70)"/>
+            </linearGradient>
+          </defs>
+
+          <!-- ── Bar chart (pipeline funnel) left half ── -->
+          <g transform="translate(4,6)">
+            <!-- Grid lines -->
+            <line x1="14" y1="94" x2="87" y2="94" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <line x1="14" y1="68" x2="87" y2="68" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <line x1="14" y1="42" x2="87" y2="42" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <line x1="14" y1="16" x2="87" y2="16" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <!-- Y-axis labels -->
+            <text x="12" y="97" text-anchor="end" fill="rgba(255,255,255,0.30)" font-size="6.5" font-family="'Plus Jakarta Sans', sans-serif">0</text>
+            <text x="12" y="71" text-anchor="end" fill="rgba(255,255,255,0.30)" font-size="6.5" font-family="'Plus Jakarta Sans', sans-serif">25</text>
+            <text x="12" y="45" text-anchor="end" fill="rgba(255,255,255,0.30)" font-size="6.5" font-family="'Plus Jakarta Sans', sans-serif">50</text>
+            <text x="12" y="19" text-anchor="end" fill="rgba(255,255,255,0.30)" font-size="6.5" font-family="'Plus Jakarta Sans', sans-serif">75</text>
+            <!-- Bars: Leads → Qualified → Proposal → Won -->
+            <rect x="17" y="28" width="13" height="66" rx="3" fill="url(#paBar1)"/>
+            <rect x="35" y="44" width="13" height="50" rx="3" fill="url(#paBar2)"/>
+            <rect x="53" y="60" width="13" height="34" rx="3" fill="url(#paBar3)"/>
+            <rect x="71" y="74" width="13" height="20" rx="3" fill="url(#paBar4)"/>
+            <!-- Bar labels -->
+            <text x="23" y="106" text-anchor="middle" fill="rgba(255,255,255,0.38)" font-size="6" font-family="'Plus Jakarta Sans', sans-serif">Leads</text>
+            <text x="41" y="106" text-anchor="middle" fill="rgba(255,255,255,0.38)" font-size="6" font-family="'Plus Jakarta Sans', sans-serif">Qual.</text>
+            <text x="59" y="106" text-anchor="middle" fill="rgba(255,255,255,0.38)" font-size="6" font-family="'Plus Jakarta Sans', sans-serif">Prop.</text>
+            <text x="77" y="106" text-anchor="middle" fill="rgba(255,255,255,0.38)" font-size="6" font-family="'Plus Jakarta Sans', sans-serif">Won</text>
+          </g>
+
+          <!-- ── Revenue trend (line/area chart) right half ── -->
+          <g transform="translate(99, 6)">
+            <!-- Grid lines -->
+            <line x1="0" y1="94" x2="91" y2="94" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <line x1="0" y1="68" x2="91" y2="68" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <line x1="0" y1="42" x2="91" y2="42" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <line x1="0" y1="16" x2="91" y2="16" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <!-- Area fill -->
+            <path d="M0,82 L15,72 L30,66 L46,50 L61,36 L76,20 L91,12 L91,94 L0,94 Z"
+              fill="url(#paAreaGrad)"/>
+            <!-- Trend line -->
+            <path d="M0,82 L15,72 L30,66 L46,50 L61,36 L76,20 L91,12"
+              stroke="rgba(20,184,169,0.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Highlight dots -->
+            <circle cx="76" cy="20" r="3.5" fill="rgba(153,246,228,1)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+            <circle cx="91" cy="12" r="3.5" fill="rgba(153,246,228,1)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+            <!-- Label -->
+            <text x="0" y="110" fill="rgba(255,255,255,0.38)" font-size="7" font-family="'Plus Jakarta Sans', sans-serif">Revenue Growth ↑</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Overlay: partner path checklist -->
+      <div class="pa-card pa-card-overlay">
+        <div class="pa-check-item">
+          <div class="pa-check-icon checked">✓</div>
+          <span class="pa-check-label">Platform certified</span>
+        </div>
+        <div class="pa-check-item">
+          <div class="pa-check-icon checked">✓</div>
+          <span class="pa-check-label">Sales playbook done</span>
+        </div>
+        <div class="pa-check-item">
+          <div class="pa-check-icon pending"></div>
+          <span class="pa-check-label">First delivery</span>
+        </div>
+        <div class="pa-progress-bar">
+          <div class="pa-progress-fill"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </a>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const canvas  = document.getElementById('pa-canvas');
+      const ctx     = canvas.getContext('2d');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ── Config ─────────────────────────────────────────────────
+      const CFG = {
+        nodeCount:   40,
+        connectDist: 110,
+        signalMax:   5,
+        spawnRate:   0.020,
+        repelDist:   90,
+        repelForce:  0.050,
+        maxSpeed:    0.9,
+        damping:     0.992,
+        orbs: [
+          { rx: 0.08, ry: 0.50, r: 120, c: 'rgba(13,61,56,'   },
+          { rx: 0.88, ry: 0.38, r: 100, c: 'rgba(20,184,169,' },
+          { rx: 0.48, ry: 0.12, r: 80,  c: 'rgba(15,94,87,'   },
+        ],
+      };
+
+      let W, H;
+      let nodes   = [];
+      let signals = [];
+      let mouse   = { x: -9999, y: -9999 };
+      const t0    = performance.now();
+
+      function resize() {
+        W = canvas.width  = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+      }
+
+      function initNodes() {
+        nodes = Array.from({ length: CFG.nodeCount }, () => ({
+          x:  Math.random() * W,
+          y:  Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.40,
+          vy: (Math.random() - 0.5) * 0.40,
+          r:  Math.random() * 1.4 + 1.0,
+          a:  Math.random() * 0.22 + 0.08,
+        }));
+        signals = [];
+      }
+
+      function spawnSignal() {
+        if (signals.length >= CFG.signalMax) return;
+        const fi   = Math.floor(Math.random() * nodes.length);
+        const from = nodes[fi];
+        const pool = [];
+        for (let i = 0; i < nodes.length; i++) {
+          if (i === fi) continue;
+          const d = Math.hypot(nodes[i].x - from.x, nodes[i].y - from.y);
+          if (d < CFG.connectDist) pool.push({ i, d });
+        }
+        if (!pool.length) return;
+        pool.sort((a, b) => a.d - b.d);
+        const ti = pool[Math.floor(Math.random() * Math.min(4, pool.length))].i;
+        signals.push({ fi, ti, t: 0, spd: 0.018 + Math.random() * 0.012 });
+      }
+
+      function update() {
+        for (const n of nodes) {
+          const dx   = n.x - mouse.x;
+          const dy   = n.y - mouse.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < CFG.repelDist && dist > 0.1) {
+            const f = ((CFG.repelDist - dist) / CFG.repelDist) * CFG.repelForce;
+            n.vx += (dx / dist) * f;
+            n.vy += (dy / dist) * f;
+          }
+
+          n.vx *= CFG.damping;
+          n.vy *= CFG.damping;
+          const spd = Math.hypot(n.vx, n.vy);
+          if (spd > CFG.maxSpeed) {
+            n.vx = (n.vx / spd) * CFG.maxSpeed;
+            n.vy = (n.vy / spd) * CFG.maxSpeed;
+          }
+
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < -10)    n.x = W + 10;
+          if (n.x > W + 10) n.x = -10;
+          if (n.y < -10)    n.y = H + 10;
+          if (n.y > H + 10) n.y = -10;
+        }
+
+        for (let i = signals.length - 1; i >= 0; i--) {
+          signals[i].t += signals[i].spd;
+          if (signals[i].t >= 1) signals.splice(i, 1);
+        }
+
+        if (Math.random() < CFG.spawnRate) spawnSignal();
+      }
+
+      function draw(now) {
+        const elapsed = (now - t0) * 0.001;
+        ctx.clearRect(0, 0, W, H);
+
+        // 1. Ambient orbs
+        for (const orb of CFG.orbs) {
+          const ox = orb.rx * W + Math.sin(elapsed * 0.18 + orb.r) * 22;
+          const oy = orb.ry * H + Math.cos(elapsed * 0.13 + orb.r) * 14;
+          const g  = ctx.createRadialGradient(ox, oy, 0, ox, oy, orb.r);
+          g.addColorStop(0, orb.c + '0.30)');
+          g.addColorStop(1, orb.c + '0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(ox, oy, orb.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // 2. Connection lines
+        ctx.lineWidth = 0.6;
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx = nodes[i].x - nodes[j].x;
+            const dy = nodes[i].y - nodes[j].y;
+            const d  = Math.sqrt(dx * dx + dy * dy);
+            if (d < CFG.connectDist) {
+              ctx.strokeStyle = `rgba(20,184,169,${(1 - d / CFG.connectDist) * 0.11})`;
+              ctx.beginPath();
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // 3. Signal pulses (teal)
+        for (const sig of signals) {
+          const from = nodes[sig.fi];
+          const to   = nodes[sig.ti];
+          const sx   = from.x + (to.x - from.x) * sig.t;
+          const sy   = from.y + (to.y - from.y) * sig.t;
+          const g    = ctx.createRadialGradient(sx, sy, 0, sx, sy, 5);
+          g.addColorStop(0,   'rgba(255,255,255,0.90)');
+          g.addColorStop(0.4, 'rgba(20,184,169,0.55)');
+          g.addColorStop(1,   'rgba(20,184,169,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // 4. Nodes
+        for (const n of nodes) {
+          ctx.fillStyle = `rgba(255,255,255,${n.a})`;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function loop(now) {
+        update();
+        draw(now);
+        requestAnimationFrame(loop);
+      }
+
+      const ro = new ResizeObserver(() => { resize(); initNodes(); });
+      ro.observe(canvas.parentElement);
+
+      window.addEventListener('mousemove', e => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      });
+      window.addEventListener('touchmove', e => {
+        if (e.touches[0]) {
+          const rect = canvas.getBoundingClientRect();
+          mouse.x = e.touches[0].clientX - rect.left;
+          mouse.y = e.touches[0].clientY - rect.top;
+        }
+      }, { passive: true });
+      window.addEventListener('mouseleave', () => {
+        mouse.x = -9999;
+        mouse.y = -9999;
+      });
+
+      resize();
+      initNodes();
+
+      if (reduced) {
+        draw(t0);
+      } else {
+        requestAnimationFrame(loop);
+      }
+    })();
+  </script>
+
+</body>
+</html>
